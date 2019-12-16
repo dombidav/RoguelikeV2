@@ -26,23 +26,73 @@ namespace RoguelikeV2
         private void MapGrid_Loaded(object sender, RoutedEventArgs e)
         {
             this.DrawMap();
-            this.DrawEntities();
+            Map.Reset();
+            this.RedrawEntities();
         }
 
-        private void DrawEntities()
+        private void RedrawEntities()
         {
-            var tempBitmap = new BitmapImage(new Uri("Img/Rogue.png", UriKind.Relative));
-            var tempImage = new Image() { Source = tempBitmap, MaxHeight = 64, MaxWidth = 64 };
-            Map.Player.UIElement = tempImage;
+            this.ClearMap();
+
+            lbl_PlayerHealth.Content = Map.Player.HP;
+            lbl_PlayerSteps.Content = Map.Player.Steps;
+            lbl_PlayerRuby.Content = Map.Player.Ruby;
+            lbl_level.Content = Map.Lvl;
+
+            #region Player Init
+            //V3-ban nem lesz külön a bitmap és a UIElement.....
+            Map.Player.UIElement = new Image() { Source = Map.Player.Image, MaxHeight = 64, MaxWidth = 64, Name=Map.Player.Name };
             _ = mapGrid.Children.Add(Map.Player.UIElement);
             Grid.SetRow(Map.Player.UIElement, Map.Player.Position.Row + 1); //A falak miatt kell +1
             Grid.SetColumn(Map.Player.UIElement, Map.Player.Position.Column + 1);
             Map.Player.DamageTaken += this.Player_DamageTaken;
             Map.Player.Died += this.Player_Died;
+            #endregion
+
+            #region Exit Init
+            Map.Exit.UIElement = new Image() { Source = Map.Exit.Image, MaxHeight = 64, MaxWidth = 64, Name=Map.Exit.Name };
+            _ = mapGrid.Children.Add(Map.Exit.UIElement);
+            Grid.SetRow(Map.Exit.UIElement, Map.Exit.Position.Row + 1);
+            Grid.SetColumn(Map.Exit.UIElement, Map.Exit.Position.Column + 1);
+            Map.Exit.PlayerExited += this.Exit_PlayerExited;
+            #endregion
+
+            #region Other Init
+            foreach (var item in Map.Entites)
+            {
+                item.UIElement = new Image() { Source = item.Image, MaxHeight = 64, MaxWidth = 64, Name = item.Name };
+                _ = mapGrid.Children.Add(item.UIElement);
+                Grid.SetRow(item.UIElement, item.Position.Row + 1);
+                Grid.SetColumn(item.UIElement, item.Position.Column + 1);
+            }
+            #endregion
+        }
+
+        private void ClearMap()
+        {
+            var list = new List<UIElement>();
+            foreach (UIElement item in mapGrid.Children)
+            {
+                if ((item is Image) && !string.IsNullOrWhiteSpace(((Image)item).Name))
+                    list.Add(item);
+                    
+            }
+            list.ForEach(x => mapGrid.Children.Remove(x));
 
         }
 
-        private void Player_Died(object sender, bool e) => throw new NotImplementedException();
+        private void Exit_PlayerExited(object sender, EventArgs e)
+        {
+            Map.Reset(true);
+            this.RedrawEntities();
+        }
+
+        private void Player_Died(object sender, bool e)
+        {
+            this.ClearMap();
+            _ = MessageBox.Show(e ? "Died" : "Rip");
+        }
+
         private void Player_DamageTaken(object sender, byte e) => throw new NotImplementedException();
 
         private void DrawMap()
@@ -62,6 +112,33 @@ namespace RoguelikeV2
                     Grid.SetColumn(tempImage, col);
                 }
             }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.W:
+                case Key.Up:
+                    _ = Map.Player.MoveCol(-1);
+                    break;
+                case Key.S:
+                case Key.Down:
+                    _ = Map.Player.MoveCol(1);
+                    break;
+                case Key.A:
+                case Key.Left:
+                    _ = Map.Player.MoveRow(-1);
+                    break;
+                case Key.D:
+                case Key.Right:
+                    _ = Map.Player.MoveRow(1);
+                    break;
+                default:
+                    break;
+            }
+
+            this.RedrawEntities();
         }
     }
 }

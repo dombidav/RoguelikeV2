@@ -8,13 +8,14 @@ namespace RoguelikeV2.Controlers
 {
     internal static class Map
     {
-        public static List<EntityBase> Entites { get; } = new List<EntityBase>();
+        public static List<Interactable> Entites { get; set; }
         public static Random rnd = new Random();
         public static byte Rows { get; } = 10;
         public static byte Cols { get; } = 10;
         public static byte Lvl { get; set; } = 0;
         public static byte GlobalTicks { get; set; }
-        public static Player Player { get; set; }
+        public static Player Player { get; set; } = new Player(new MapPosition(0, 0));
+        public static Exit Exit { get; set; } = new Exit(RandomPosition);
 
         public static MapPosition RandomPosition 
         { 
@@ -24,25 +25,69 @@ namespace RoguelikeV2.Controlers
                 do
                 {
                     newPos = new MapPosition((sbyte)rnd.Next(0, Rows), (sbyte)rnd.Next(0, Cols));
-                } while (PositionOccupied(newPos));
+                } while (!PositionNotOccupied(newPos));
                 return newPos;
             } 
         }
 
-        public static void Add(EntityBase entity)
+        public static void Add(Interactable entity)
         {
+            if (Entites is null)
+                Entites = new List<Interactable>();
             if(entity.Position is null)
                     entity.Position = RandomPosition;
             Entites.Add(entity);
+            if(entity is Enemy)
+                ((Enemy)entity).Died += EnemyDied;
         }
 
-        public static void Reset()
+        private static void EnemyDied(object sender, EventArgs e) => Entites.Remove((Enemy)sender);
+
+
+
+        /// <summary>
+        /// Törli a pályát és újra generálja
+        /// </summary>
+        /// <param name="next">Következő pálya?</param>
+        public static void Reset(bool next = false)
         {
-            Entites.Clear();
-            Populate();
+            if (Entites is null)
+                Entites = new List<Interactable>();
+            if(Entites.Count > 0)
+                Entites.Clear();
+
+            if (next)
+                Lvl++;
+
+            Exit.Position = RandomPosition;
+            Player.Position = new MapPosition(0, 0);
+            var diff = Lvl > 0 ? (Lvl / 2) + 1 : 0;
+            var cnt = 4;
+            /* Minden ellenség különböző nehézségű, szóval "pontokat" rendeltem hozzá, amit egy össz "diff" változóból levonok. A diff minden szinten emelkedik, de sosincs 4-nél több ellenség.
+               ______________
+               |____Diff____|
+               | Spikes | 1 |
+               |  Ghost | 2 |
+               |    Rat | 3 |
+               | Zombie | 4 |
+               |============|
+        
+             */
+            while(diff > 0 && cnt > 0)
+            {
+                #pragma warning disable IDE0007 // Use implicit type
+                Enemy tmp = (rnd.Next(diff > 4 ? 4 : diff)) switch
+                {
+                    0 => new Spikes(RandomPosition),
+                    1 => new Ghost(RandomPosition),
+                    2 => new Rat(RandomPosition),
+                    _ => new Zombie(RandomPosition),
+                };
+                #pragma warning restore IDE0007 // Use implicit type
+                Add(tmp);
+            }
         }
 
-        private static void Populate() => throw new NotImplementedException();
 
         public static void Tick()
         {
@@ -55,10 +100,21 @@ namespace RoguelikeV2.Controlers
         /// </summary>
         /// <param name="position"> pozíció</param>
         /// <returns>Lehet és NEM foglalt?</returns>
-        private static bool PositionOccupied(MapPosition position) 
-            => CanMoveTo(position.Row, position.Column)
-                ? Entites.Where(x => x.Position.Column == position.Column && x.Position.Row == position.Row).Count() <= 0
-                : false;
+        private static bool PositionNotOccupied(MapPosition position)
+        {
+            if (CanMoveTo(position.Row, position.Column))
+            {
+                if (Entites is null)
+                {
+                    Entites = new List<Interactable>();
+                    return false;
+                }
+                else
+                    return Entites.Where(x => x.Position.Column == position.Column && x.Position.Row == position.Row).Count() <= 0;
+            }
+            else 
+                return false;
+        }
 
         /// <summary>
         /// Lehetséges oda lépni? (nem nézi, hogy van-e ott valaki)
