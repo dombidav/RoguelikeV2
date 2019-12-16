@@ -12,9 +12,7 @@ namespace RoguelikeV2.Controlers.Entity
     /// </summary>
     internal class Zombie : Enemy
     {
-        public Zombie(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) : base(position, 30, 2, id, uIElement, image, "Zombie")
-        {
-        }
+        public Zombie(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) : base(position, 30, 2, id, uIElement, image, "Zombie") => Image = new BitmapImage(new Uri("Img/Zombie.png", UriKind.Relative));
 
         public override void Tick()
         {

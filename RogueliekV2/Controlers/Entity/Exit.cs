@@ -12,8 +12,8 @@ namespace RoguelikeV2.Controlers.Entity
         public Exit(MapPosition position,
                     Guid? id = null,
                     UIElement uIElement = null,
-                    BitmapImage image = null) 
-            : base(position, 0, id, uIElement, image, "Exit"){}
+                    BitmapImage image = null)
+            : base(position, 0, id, uIElement, image, "Exit") => Image = new BitmapImage(new Uri("Img/Exit.png", UriKind.Relative));
 
         public event EventHandler PlayerExited;
 

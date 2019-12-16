@@ -12,9 +12,7 @@ namespace RoguelikeV2.Controlers.Entity
     /// </summary>
     class Ghost : Enemy
     {
-        public Ghost(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) : base(position, 20, 0, id, uIElement, image, "Ghost")
-        {
-        }
+        public Ghost(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) : base(position, 20, 0, id, uIElement, image, "Ghost") => Image = new BitmapImage(new Uri("Img/Ghost.png", UriKind.Relative));
         public override void Tick()
         {
             bool cantMove;

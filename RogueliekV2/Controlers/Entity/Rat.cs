@@ -12,9 +12,7 @@ namespace RoguelikeV2.Controlers.Entity
     /// </summary>
     class Rat : Enemy
     {
-        public Rat(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) : base(position, 25, 1, id, uIElement, image, "Rat")
-        {
-        }
+        public Rat(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) : base(position, 25, 1, id, uIElement, image, "Rat") => Image = new BitmapImage(new Uri("Img/Rat.png", UriKind.Relative));
 
         public override void Tick()
         {
