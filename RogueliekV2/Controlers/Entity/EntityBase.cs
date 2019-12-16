@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace RoguelikeV2.Controlers.Entity
 {
@@ -11,7 +12,7 @@ namespace RoguelikeV2.Controlers.Entity
     /// </summary>
     abstract class EntityBase
     {
-        public EntityBase(MapPosition position, byte ticks = 0, Guid ? id = null, UIElement uIElement = null, Image image = null, string name = null)
+        public EntityBase(MapPosition position, byte ticks = 0, Guid ? id = null, UIElement uIElement = null, BitmapImage image = null, string name = null)
         {
             Id = id ?? Guid.NewGuid();
             Position = position ?? throw new ArgumentNullException(nameof(position));
@@ -21,7 +22,7 @@ namespace RoguelikeV2.Controlers.Entity
             Ticks = ticks;
         }
 
-        public EntityBase(sbyte Row, sbyte Column, byte ticks = 0, Guid? id = null, UIElement uIElement = null, Image image = null, string name = null)
+        public EntityBase(sbyte Row, sbyte Column, byte ticks = 0, Guid? id = null, UIElement uIElement = null, BitmapImage image = null, string name = null)
         {
             Id = id ?? Guid.NewGuid();
             Position = new MapPosition(Row, Column);
@@ -41,7 +42,7 @@ namespace RoguelikeV2.Controlers.Entity
         /// <summary>
         /// Ez többnyire be ban égetve a kódba, de lehet hogy változik futás alatt
         /// </summary>
-        public Image Image { get; set;}
+        public BitmapImage Image { get; set;}
         public string Name { get; set; }
         /// <summary>
         /// Ennek a mozgásnál van szerepe

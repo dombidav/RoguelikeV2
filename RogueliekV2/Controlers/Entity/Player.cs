@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace RoguelikeV2.Controlers.Entity
 {
@@ -15,9 +16,8 @@ namespace RoguelikeV2.Controlers.Entity
         public event EventHandler<bool> Died;
         public event EventHandler<byte> DamageTaken;
 
-        public Player(MapPosition position, Guid? id = null, UIElement uIElement = null, Image image = null, string name = null) : base(position, 0, id, uIElement, image, name)
-        {
-        }
+        public Player(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null, string name = null) : base(position, 0, id, uIElement, image, name) 
+            => Image = new BitmapImage(new Uri("Img/Rogue.png", UriKind.Relative));
 
         public override void OnCollide(EntityBase OtherEntity) => throw new System.NotImplementedException();
         public void TakeDamage(byte amount)

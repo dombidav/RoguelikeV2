@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RoguelikeV2.Controlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,27 @@ namespace RoguelikeV2
     {
         public MainWindow() => this.InitializeComponent();
 
-        private void MapGrid_Loaded(object sender, RoutedEventArgs e) => this.DrawMap();
+        private void MapGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.DrawMap();
+            this.DrawEntities();
+        }
+
+        private void DrawEntities()
+        {
+            var tempBitmap = new BitmapImage(new Uri("Img/Rogue.png", UriKind.Relative));
+            var tempImage = new Image() { Source = tempBitmap, MaxHeight = 64, MaxWidth = 64 };
+            Map.Player.UIElement = tempImage;
+            _ = mapGrid.Children.Add(Map.Player.UIElement);
+            Grid.SetRow(Map.Player.UIElement, Map.Player.Position.Row + 1); //A falak miatt kell +1
+            Grid.SetColumn(Map.Player.UIElement, Map.Player.Position.Column + 1);
+            Map.Player.DamageTaken += this.Player_DamageTaken;
+            Map.Player.Died += this.Player_Died;
+
+        }
+
+        private void Player_Died(object sender, bool e) => throw new NotImplementedException();
+        private void Player_DamageTaken(object sender, byte e) => throw new NotImplementedException();
 
         private void DrawMap()
         {

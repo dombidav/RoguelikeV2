@@ -12,7 +12,6 @@ namespace RoguelikeV2.Controlers
         public static Random rnd = new Random();
         public static byte Rows { get; } = 10;
         public static byte Cols { get; } = 10;
-        public static Dictionary<TileType, Image> MapTiles { get; }
         public static byte Lvl { get; set; } = 0;
         public static byte GlobalTicks { get; set; }
         public static Player Player { get; set; }

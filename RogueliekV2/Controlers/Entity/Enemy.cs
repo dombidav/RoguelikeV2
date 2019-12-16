@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace RoguelikeV2.Controlers.Entity
 {
     abstract class Enemy : Movable
     {
-        public Enemy(MapPosition position, byte atk, byte ticks = 0, Guid? id = null, UIElement uIElement = null, Image image = null, string name = null) : base(position, ticks, id, uIElement, image, name) => ATK = atk;
+        public Enemy(MapPosition position, byte atk, byte ticks = 0, Guid? id = null, UIElement uIElement = null, BitmapImage image = null, string name = null) : base(position, ticks, id, uIElement, image, name) => ATK = atk;
 
         /// <summary>
         /// Sebzés
