@@ -21,8 +21,8 @@ namespace RoguelikeV2.Controlers.Entity
                 var rowDist = Math.Abs(Map.Player.Position.Row - Position.Row);
                 var colDist = Math.Abs(Map.Player.Position.Column - Position.Column);
                 _ = rowDist > colDist
-                    ? Map.Player.Position.Row > Position.Row ? this.MoveRow(1) : this.MoveRow(-1)
-                    : Map.Player.Position.Column > Position.Column ? this.MoveCol(1) : this.MoveRow(-1);
+                    ? Map.Player.Position.Row > Position.Row ? this.MoveCol(1) : this.MoveCol(-1)
+                    : Map.Player.Position.Column > Position.Column ? this.MoveRow(1) : this.MoveCol(-1);
                 this.Move();
             }
             else

@@ -21,6 +21,8 @@ namespace RoguelikeV2
     /// </summary>
     public partial class MainWindow : Window
     {
+        public bool ExitPossible { get; private set; } = false;
+
         public MainWindow() => this.InitializeComponent();
 
         private void MapGrid_Loaded(object sender, RoutedEventArgs e)
@@ -83,8 +85,12 @@ namespace RoguelikeV2
 
         private void Exit_PlayerExited(object sender, EventArgs e)
         {
-            Map.Reset(true);
-            this.RedrawEntities();
+            if (ExitPossible)
+            {
+                ExitPossible = false; //Szóval a static class Map másik szálon futott, szóval egy exit event volt hogy 400x futott le
+                Map.Reset(true);
+                this.RedrawEntities(); 
+            }
         }
 
         private void Player_Died(object sender, bool e)
@@ -120,24 +126,24 @@ namespace RoguelikeV2
             {
                 case Key.W:
                 case Key.Up:
-                    _ = Map.Player.MoveCol(-1);
+                    if(Map.Player.MoveCol(-1)) Map.Tick();
                     break;
                 case Key.S:
                 case Key.Down:
-                    _ = Map.Player.MoveCol(1);
+                    if (Map.Player.MoveCol(1)) Map.Tick();
                     break;
                 case Key.A:
                 case Key.Left:
-                    _ = Map.Player.MoveRow(-1);
+                    if (Map.Player.MoveRow(-1)) Map.Tick();
                     break;
                 case Key.D:
                 case Key.Right:
-                    _ = Map.Player.MoveRow(1);
+                    if (Map.Player.MoveRow(1)) Map.Tick();
                     break;
                 default:
                     break;
             }
-
+            ExitPossible = true;
             this.RedrawEntities();
         }
     }

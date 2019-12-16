@@ -13,8 +13,8 @@ namespace RoguelikeV2.Controlers.Entity
         {
         }
         public event EventHandler<MapPosition> Moved;
-        public virtual bool MoveRow(sbyte amount) => Position.MoveRow(amount);
-        public virtual bool MoveCol(sbyte amount) => Position.MoveCol(amount);
+        public virtual bool MoveCol(sbyte amount) => Position.MoveRow(amount);
+        public virtual bool MoveRow(sbyte amount) => Position.MoveCol(amount);
 
         /// <summary>
         /// Ez CSAK az event hívás miatt kell (mert child osztály nem tud invoke-olni)

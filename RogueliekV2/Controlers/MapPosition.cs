@@ -16,23 +16,23 @@ namespace RoguelikeV2.Controlers
 
         public MapPosition(int row, int column) //Matek miatt kell ilyen
         {
-            Row = row > sbyte.MaxValue 
-                ? sbyte.MaxValue 
-                : row < sbyte.MinValue 
-                    ? sbyte.MinValue 
+            Row = row > sbyte.MaxValue
+                ? sbyte.MaxValue
+                : row < sbyte.MinValue
+                    ? sbyte.MinValue
                     : (sbyte)row;
-            
-            Column = column > sbyte.MaxValue 
-                ? sbyte.MaxValue 
-                : column < sbyte.MinValue 
-                    ? sbyte.MinValue 
+
+            Column = column > sbyte.MaxValue
+                ? sbyte.MaxValue
+                : column < sbyte.MinValue
+                    ? sbyte.MinValue
                     : (sbyte)column;
         }
 
         internal bool MoveRow(sbyte amount)
         {
             var newRow = Row + amount;
-            if(newRow <= sbyte.MaxValue && newRow >= sbyte.MinValue && Map.CanMoveTo(newRow, Column))
+            if (newRow <= sbyte.MaxValue && newRow >= sbyte.MinValue && Map.CanMoveTo(newRow, Column))
             {
                 Row = (sbyte)newRow;
                 return true;
@@ -50,5 +50,16 @@ namespace RoguelikeV2.Controlers
             }
             return false;
         }
+
+        public static bool operator ==(MapPosition x, MapPosition y) 
+            => (x is null) || y is null 
+            ? false 
+            : x.Row == y.Row && x.Column == y.Column;
+
+        public static bool operator !=(MapPosition x, MapPosition y)
+            => (x is null) || (y is null)
+            ? true
+            : x.Row != y.Row || x.Column != y.Column;
+
     }
 }

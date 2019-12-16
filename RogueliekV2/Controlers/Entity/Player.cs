@@ -16,10 +16,11 @@ namespace RoguelikeV2.Controlers.Entity
         public event EventHandler<bool> Died;
         public event EventHandler<byte> DamageTaken;
 
-        public Player(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null, string name = null) : base(position, 0, id, uIElement, image, name) 
+        public Player(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) 
+            : base(position, 0, id, uIElement, image, "Player") 
             => Image = new BitmapImage(new Uri("Img/Rogue.png", UriKind.Relative));
 
-        public override void OnCollide(EntityBase OtherEntity) => throw new System.NotImplementedException();
+        public override void OnCollide(EntityBase OtherEntity) { }
         public void TakeDamage(byte amount)
         {
             var newHP = HP - amount;
@@ -38,17 +39,17 @@ namespace RoguelikeV2.Controlers.Entity
                 Died?.Invoke(this, true);
         }
 
-        public override bool MoveRow(sbyte amount)
+        public override bool MoveCol(sbyte amount)
         {
-            var ok = base.MoveRow(amount);
+            var ok = base.MoveCol(amount);
             if (ok)
                 this.Tick();
             return ok;
         }
 
-        public override bool MoveCol(sbyte amount)
+        public override bool MoveRow(sbyte amount)
         {
-            var ok = base.MoveCol(amount);
+            var ok = base.MoveRow(amount);
             if (ok)
                 this.Tick();
             return ok;

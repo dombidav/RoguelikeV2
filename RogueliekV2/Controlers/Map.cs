@@ -75,15 +75,17 @@ namespace RoguelikeV2.Controlers
              */
             while(diff > 0 && cnt > 0)
             {
+                var randomNumber = rnd.Next(1, diff > 5 ? 5 : diff); // Diff a generálás felső határa, de maximum 5, így ha a diff nagy szám (pl. 10) akkor csak több ellenfél generálódik
                 #pragma warning disable IDE0007 // Use implicit type
-                Enemy tmp = (rnd.Next(diff > 4 ? 4 : diff)) switch
+                Enemy tmp = randomNumber switch
                 {
-                    0 => new Spikes(RandomPosition),
-                    1 => new Ghost(RandomPosition),
-                    2 => new Rat(RandomPosition),
+                    1 => new Spikes(RandomPosition),
+                    2 => new Ghost(RandomPosition),
+                    3 => new Rat(RandomPosition),
                     _ => new Zombie(RandomPosition),
                 };
                 #pragma warning restore IDE0007 // Use implicit type
+                diff -= randomNumber;
                 Add(tmp);
             }
         }
@@ -93,6 +95,9 @@ namespace RoguelikeV2.Controlers
         {
             GlobalTicks++;
             Entites.ForEach(x => x.Tick());
+            Entites.Where(x => x.Position == Player.Position).ToList().ForEach(x => x.OnCollide(Player));
+            if (Exit.Position == Player.Position)
+                Exit.OnCollide(Player);
         }
 
         /// <summary>
