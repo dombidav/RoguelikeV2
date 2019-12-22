@@ -42,7 +42,7 @@ namespace RoguelikeV2
             lbl_level.Content = Map.Lvl;
 
             #region Player Init
-            //V3-ban nem lesz külön a bitmap és a UIElement.....
+            //V3-ban nem lesz külön a bitmap és a UIElement, de itt már így marad.....
             Map.Player.UIElement = new Image() { Source = Map.Player.Image, MaxHeight = 64, MaxWidth = 64, Name=Map.Player.Name };
             _ = mapGrid.Children.Add(Map.Player.UIElement);
             Grid.SetRow(Map.Player.UIElement, Map.Player.Position.Row + 1); //A falak miatt kell +1
@@ -87,7 +87,7 @@ namespace RoguelikeV2
         {
             if (ExitPossible)
             {
-                ExitPossible = false; //Szóval a static class Map másik szálon futott, szóval egy exit event volt hogy 400x futott le
+                ExitPossible = false; //A static class Map másik szálon fut, szóval egy exit event volt hogy 400x futott le, ezért kell az ExitPossible változó, ezt úgy lehetne szebbé, optimálisabbá tenni, hogy Task-ként futna minden func., de ahhoz gyakorlatilag az egészet újra kéne írni
                 Map.Reset(true);
                 this.RedrawEntities(); 
             }
@@ -95,11 +95,15 @@ namespace RoguelikeV2
 
         private void Player_Died(object sender, bool e)
         {
-            this.ClearMap();
-            _ = MessageBox.Show(e ? "Died" : "Rip");
+            if (ExitPossible)  //Ugyan az a szálkezelési probléma mint az Exit_PlayerExited function-nél
+            {
+                ExitPossible = false; //Nem használok külön változót, mert ugyan az a feltétel
+                this.ClearMap();
+                _ = MessageBox.Show(e ? "Died" : "Rip"); 
+            }
         }
 
-        private void Player_DamageTaken(object sender, byte e) => throw new NotImplementedException();
+        private void Player_DamageTaken(object sender, byte e) { }
 
         private void DrawMap()
         {

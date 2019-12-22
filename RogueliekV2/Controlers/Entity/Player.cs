@@ -36,7 +36,7 @@ namespace RoguelikeV2.Controlers.Entity
             if(Steps > 1)
                 Steps--;
             else
-                Died?.Invoke(this, true);
+                Died?.Invoke(this, false);
         }
 
         public override bool MoveCol(sbyte amount)
