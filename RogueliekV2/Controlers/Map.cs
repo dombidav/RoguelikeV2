@@ -24,7 +24,7 @@ namespace RoguelikeV2.Controlers
                 MapPosition newPos;
                 do
                 {
-                    newPos = new MapPosition((sbyte)rnd.Next(0, Rows), (sbyte)rnd.Next(0, Cols));
+                    newPos = new MapPosition((sbyte)rnd.Next(1, Rows), (sbyte)rnd.Next(1, Cols));
                 } while (!PositionNotOccupied(newPos));
                 return newPos;
             } 
@@ -37,11 +37,15 @@ namespace RoguelikeV2.Controlers
             if(entity.Position is null)
                     entity.Position = RandomPosition;
             Entites.Add(entity);
-            if(entity is Enemy)
-                ((Enemy)entity).Died += EnemyDied;
+            if (entity is Enemy)
+                ((Enemy)entity).Died += RemoveEntity;
+            else if (entity is Collectible)
+                ((Collectible)entity).Remove += CollectibleRemove;
         }
 
-        private static void EnemyDied(object sender, EventArgs e) => Entites.Remove((Enemy)sender);
+        private static void CollectibleRemove(object sender, Movable e) => RemoveEntity(sender, null);
+
+        private static void RemoveEntity(object sender, EventArgs e) => Entites.Remove((Interactable)sender);
 
 
 
@@ -63,20 +67,35 @@ namespace RoguelikeV2.Controlers
             Player.Position = new MapPosition(0, 0);
             var diff = Lvl > 0 ? (Lvl / 2) + 1 : 0;
             var cnt = 4;
-            /* Minden ellenség különböző nehézségű, szóval "pontokat" rendeltem hozzá, amit egy össz "diff" változóból levonok. A diff minden szinten emelkedik, de sosincs 4-nél több ellenség.
-               ______________
-               |____Diff____|
-               | Spikes | 1 |
-               |  Ghost | 2 |
-               |    Rat | 3 |
-               | Zombie | 4 |
-               |============|
+            /* Minden ellenség különböző nehézségű, szóval "pontokat" rendeltem hozzá, amit egy össz "diff" változóból levonok. A diff minden szinten emelkedik, de sosincs 4-nél több ellenség. Ha Stamina potion-t vagy Hp potion-t generál, akkor lehet magasabb az ellenség szám és a nehézség is
+               ________________
+               |____Diff______|
+               |  Spikes |  1 |
+               |   Ghost |  2 |
+               |     Rat |  3 |
+               |  Zombie |  4 |
+               |==============|
         
              */
-            while(diff > 0 && cnt > 0)
+            for (var i = 0; i < rnd.Next(3); i++)
             {
-                var randomNumber = rnd.Next(1, diff > 5 ? 5 : diff); // Diff a generálás felső határa, de maximum 5, így ha a diff nagy szám (pl. 10) akkor csak több ellenfél generálódik
-                #pragma warning disable IDE0007 // Use implicit type
+                Collectible tmp = rnd.Next(0, 3) switch
+                {
+                    0 => new HPpot(RandomPosition),
+                    1 => new StaminaPot(RandomPosition),
+                    _ => new Ruby(RandomPosition)
+                };
+                if((tmp is HPpot) || (tmp is StaminaPot))
+                {
+                    diff++;
+                    cnt++;
+                }
+                Add(tmp);
+            }
+
+            while (diff > 0 && cnt > 0)
+            {
+                var randomNumber = rnd.Next(1, diff > 5 ? 5 : diff); // Diff a generálás felső határa, de maximum 5 a switch miatt
                 Enemy tmp = randomNumber switch
                 {
                     1 => new Spikes(RandomPosition),
@@ -84,7 +103,6 @@ namespace RoguelikeV2.Controlers
                     3 => new Rat(RandomPosition),
                     _ => new Zombie(RandomPosition),
                 };
-                #pragma warning restore IDE0007 // Use implicit type
                 diff -= randomNumber;
                 Add(tmp);
             }

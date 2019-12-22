@@ -16,9 +16,25 @@ namespace RoguelikeV2.Controlers.Entity
         public event EventHandler<bool> Died;
         public event EventHandler<byte> DamageTaken;
 
-        public Player(MapPosition position, Guid? id = null, UIElement uIElement = null, BitmapImage image = null) 
-            : base(position, 0, id, uIElement, image, "Player") 
-            => Image = new BitmapImage(new Uri("Img/Rogue.png", UriKind.Relative));
+        public Player(MapPosition position, Guid? id = null, UIElement uIElement = null) 
+            : base(position, 0, id, uIElement, new BitmapImage(new Uri("Img/Rogue.png", UriKind.Relative)), "Player")
+        { }
+
+        internal void AddRuby()
+        {
+            if (Ruby < byte.MaxValue - 1)
+                Ruby++;
+        }
+
+        internal void AddSteps(byte stepsAmount) 
+            => Steps = stepsAmount + Steps > 100 
+                        ? (byte)100 
+                        : (byte)(stepsAmount + Steps);
+
+        internal void Heal(byte healAmount) 
+            => HP = healAmount + HP > byte.MaxValue 
+                    ? byte.MaxValue 
+                    : (byte)(healAmount + HP);
 
         public override void OnCollide(EntityBase OtherEntity) { }
         public void TakeDamage(byte amount)
