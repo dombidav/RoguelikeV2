@@ -99,7 +99,7 @@ namespace RoguelikeV2
             {
                 ExitPossible = false; //Nem használok külön változót, mert ugyan az a feltétel
                 this.ClearMap();
-                _ = MessageBox.Show(e ? "Died" : "Rip"); 
+                _ = MessageBox.Show(e ? "Meghaltál" : "Eddig bírtad..."); 
             }
         }
 
